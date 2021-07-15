@@ -41,7 +41,7 @@ class NotionClient(requests.Session):
             'Notion-Version': '2021-05-13',
         })
 
-    def search(self, query: str, sort: dict = None):
+    def search(self, query: str, **kwargs):
         """ Search for things within notion. We'll only have access to things which you have shared.
         Example:
 
@@ -52,7 +52,9 @@ class NotionClient(requests.Session):
         :param sort:
         :return:
         """
-        return self.post('search', {"query": query, "sort": sort}).json()
+        body = {"query": query}
+        body.update(kwargs)
+        return self.post('search', body).json()
 
     def get_database(self, database_id):
         return self.get(f'databases/{database_id}').json()

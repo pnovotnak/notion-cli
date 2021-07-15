@@ -10,14 +10,16 @@ def xterm_link(text, url):
 
 
 class Todo:
+    id = None
+    url = None
     title = None
     due = None
-    url = None
 
     def __init__(self, raw):
         properties = raw['properties']
-        self.title = properties["Text"]["title"][0]["text"]["content"]
+        self.id = raw['id']
         self.url = raw["url"]
+        self.title = properties["Text"]["title"][0]["text"]["content"]
 
         try:
             self.due = DueDate(properties["Due"])
@@ -33,7 +35,9 @@ class Todo:
         if self.due and self.due.is_due():
             color_args = {'fg': 'red'}
 
-        return color(f'- {xterm_link(" ".join(line), self.url)}', **color_args)
+        # rendered_li = f'{self.id}\t{" ".join(line)}'
+        rendered_li = f'- {" ".join(line)}'
+        return color(f'{xterm_link(rendered_li, self.url)}', **color_args)
 
 
 class TodoClient(NotionClient):
@@ -100,3 +104,6 @@ class TodoClient(NotionClient):
                 }
             },
         })
+
+    def archive_todo(self, page_id):
+        self.patch(f'pages/{page_id}', json={"archived": True})
