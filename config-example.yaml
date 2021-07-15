@@ -1,0 +1,7 @@
+client:
+  # https://www.notion.so/my-integrations
+  bearer_token: 'secret_xxxx'
+
+todos:
+  # Visit the database you wish to use at https://notion.so/ and snag the first part of the url
+  db: '48f8fee9cd794180bc2fec0398253067'
