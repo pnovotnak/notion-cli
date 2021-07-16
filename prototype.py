@@ -3,7 +3,8 @@
 exec "$(dirname "$(readlink "$0")")"/venv/bin/python "$0" "$@"
 '''
 
-__doc__ = """You will need to deliberately set your docstrings though"""
+# This file can be executed by either sh or python
+__doc__ = """Notion CLI"""
 
 import argparse
 import json
