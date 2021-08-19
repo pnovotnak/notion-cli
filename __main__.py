@@ -6,6 +6,13 @@ exec "$(dirname "$(readlink "$0")")"/venv/bin/python "$0" "$@"
 # This file can be executed by either sh or python
 __doc__ = """Notion CLI"""
 
+from notion.cli import cli
+
+if __name__ == '__main__':
+    cli(auto_envvar_prefix='NOTION_CLI')
+
+"""
+
 import argparse
 import json
 import sys
@@ -54,3 +61,4 @@ if __name__ == "__main__":
     func = args['func']
     del args['func']
     func(**args)
+"""
