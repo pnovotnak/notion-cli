@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-from todo import TodoClient
+from cli.todo import TodoClient
 
 
 if __name__ == "__main__":
