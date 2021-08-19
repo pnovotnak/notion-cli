@@ -2,7 +2,8 @@ from typing import List
 
 from colors import color
 
-from notion import NotionClient, DueDate, FILTERS, SORTS
+from notion.client import NotionClient
+from notion.types import DueDate, FILTERS, SORTS
 
 
 def xterm_link(text, url):
@@ -53,6 +54,12 @@ class TodoClient(NotionClient):
                 {
                     "and": [
                         FILTERS['type'](category),
+                        FILTERS['complete'](complete)
+                    ]
+                },
+                {
+                    "and": [
+                        FILTERS['type'](None),
                         FILTERS['complete'](complete)
                     ]
                 }

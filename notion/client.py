@@ -1,33 +1,4 @@
-import datetime
-
 import requests
-
-
-FILTERS = {
-    'type': lambda t: {
-        "property": "Type",
-        "select": {
-            "equals": t,
-        }
-    },
-    'complete': lambda complete=False: {
-        "property": "Done",
-        "checkbox": {
-            "equals": complete,
-        }
-    }
-}
-
-SORTS = {
-    'created': lambda direction='ascending': {
-        "property": "Created",
-        "direction": direction,
-    },
-    'due': lambda direction='descending': {
-        "property": "Due",
-        "direction": direction,
-    }
-}
 
 
 class NotionClient(requests.Session):
@@ -65,23 +36,3 @@ class NotionClient(requests.Session):
 
     def request(self, method, path, **kwargs):
         return super(NotionClient, self).request(method, f'{self.root_url}/{path}', **kwargs)
-
-
-class DateProperty:
-    start = None
-    end = None
-
-    def __init__(self, property_data):
-        for k, v in property_data['date'].items():
-            if v:
-                setattr(self, k, datetime.date.fromisoformat(v))
-
-
-class TextPropterty:
-    def __init__(self):
-        pass
-
-
-class DueDate(DateProperty):
-    def is_due(self):
-        return self.start <= datetime.date.today()

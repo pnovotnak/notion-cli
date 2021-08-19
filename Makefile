@@ -5,4 +5,4 @@ virtualenv:
 	source venv/bin/activate; pip install -r requirements.txt
 
 install: /usr/local/bin/notion-cli
-	ln -s "$$PWD/prototype.py" /usr/local/bin/notion-cli
+	ln -s "$$PWD/__main__.py" /usr/local/bin/notion-cli
