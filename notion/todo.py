@@ -3,6 +3,8 @@ from colors import color
 from notion.client import NotionClient
 from notion.types import DueDate
 
+import typer
+
 
 def xterm_link(text, url):
     return f'\033]8;;{url}\033\\{text}\033]8;;\033\\'
@@ -45,3 +47,77 @@ class TodoClient(NotionClient):
     def __init__(self, bearer_token, db):
         super().__init__(bearer_token)
         self.db = db
+        app = typer.Typer()
+
+        # TODO generalize and convert to helper
+        for name, val in self.__dict__.items():
+            if callable(val):
+                app.command()
+
+    def get_todos(self, category: str, complete: bool = False):
+        client = self
+        query = {
+            "or": [
+                {
+                    "and": [
+                        FILTERS['type'](category),
+                        FILTERS['complete'](complete)
+                    ]
+                },
+                {
+                    "and": [
+                        FILTERS['type'](None),
+                        FILTERS['complete'](complete)
+                    ]
+                }
+            ]
+        }
+        results = client.query_database(client.db, query=query, sorts=[
+            SORTS['due'](),
+            SORTS['created']()
+        ])['results']
+
+        out = []
+        for result in results:
+            out.append(Todo(result))
+        return out
+
+    def print_todos(self, *args, **kwargs):
+        for todo in self.get_todos(*args, **kwargs):
+            print(todo)
+
+    def create_todo(self, title, category):
+        """ Create a to-do in the database
+        See: https://developers.notion.com/reference/post-page
+        """
+        self.post('pages', json={
+            'parent': {
+                'type': 'database_id',
+                'database_id': self.db
+            },
+            'archived': False,
+            'properties': {
+                # 'Meeting': {'type': 'relation', 'relation': []},
+                # 'Due': {'type': 'date', 'date': {'start': '2021-06-17', 'end': None}},
+                # 'Done': {'type': 'checkbox', 'checkbox': False},
+                # 'Project': {'relation': [{'id': 'fdd80593-7034-49b3-a138-ab8b39450fca'}]},
+                'Type': {
+                    'type': 'select',
+                    'select': {
+                        'name': category
+                    }
+                },
+                'Text': {
+                    'title': [
+                        {
+                            'text': {
+                                'content': title,
+                            },
+                        }
+                    ]
+                }
+            },
+        })
+
+    def archive_todo(self, page_id):
+        self.patch(f'pages/{page_id}', json={"archived": True})

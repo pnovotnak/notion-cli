@@ -6,10 +6,28 @@ exec "$(dirname "$(readlink "$0")")"/venv/bin/python "$0" "$@"
 # This file can be executed by either sh or python
 __doc__ = """Notion CLI"""
 
-from notion.cli import cli
+import logging
+import os
+from pathlib import Path
+
+import typer as typer
+import yaml
+
+from notion.todo import TodoClient
+
+
+def cli(ctx, config: str = Path(os.path.dirname(os.path.realpath(__file__)), 'config.yaml'), debug: bool = False):
+    if debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    with open(config) as fp:
+        config = yaml.load(fp, Loader=yaml.SafeLoader)
+
+    ctx.obj = typer.run(TodoClient(**config['client'], **config['todos']))
+
 
 if __name__ == '__main__':
-    cli(auto_envvar_prefix='NOTION_CLI')
+    typer.run(cli)
 
 """
 
